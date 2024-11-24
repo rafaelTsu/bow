@@ -5,11 +5,10 @@ from sklearn.model_selection import train_test_split
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 import nltk
-nltk.download('all')
 
-
-from models.arvDecisao import train_arvore_decisao
-from models.knn import train_knn
+# Módulos adicionados por você
+from models.arvDecisao import train_arvore_decisao  # Adicionado
+from models.knn import train_knn  # Adicionado
 
 # Baixar recursos do NLTK (apenas na primeira execução)
 nltk.download('punkt')
@@ -26,7 +25,7 @@ def pdf_para_txt(caminho_pdf):
 
 # Função para limpar texto e remover stopwords
 def limpar_texto(texto):
-    stop_words = set(stopwords.words("english"))
+    stop_words = set(stopwords.words("portuguese"))  # Alterado para português
     palavras = word_tokenize(texto.lower())
     palavras_limpa = [palavra for palavra in palavras if palavra.isalnum() and palavra not in stop_words]
     return " ".join(palavras_limpa)
@@ -61,9 +60,9 @@ print("Classes: ", classes)
 # Divisão dos dados em treino e teste
 X_train, X_test, y_train, y_test = train_test_split(X, classes, test_size=0.3, random_state=42)
 
-# Chamando os modelos para treinamento
-print("Treinando modelo: Árvore de Decisão")
-train_arvore_decisao(X_train, y_train)
+# Minhas modificações: Chamando os modelos de treinamento
+print("Treinando modelo: Árvore de Decisão")  # Adicionado
+train_arvore_decisao(X_train, y_train)  # Adicionado
 
-print("\nTreinando modelo: KNN")
-train_knn(X_train, y_train)
+print("\nTreinando modelo: KNN")  # Adicionado
+train_knn(X_train, y_train)  # Adicionado
