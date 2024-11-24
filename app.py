@@ -1,11 +1,19 @@
-import nltk
-from nltk.corpus import stopwords
-
-# Baixar recursos do NLTK
-nltk.download('punkt_tab')
-nltk.download('stopwords')
-
+import os
 import PyPDF2
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.model_selection import train_test_split
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+import nltk
+nltk.download('all')
+
+
+from models.arvDecisao import train_arvore_decisao
+from models.knn import train_knn
+
+# Baixar recursos do NLTK (apenas na primeira execução)
+nltk.download('punkt')
+nltk.download('stopwords')
 
 # Função para extrair texto de PDFs
 def pdf_para_txt(caminho_pdf):
@@ -16,23 +24,19 @@ def pdf_para_txt(caminho_pdf):
             texto += leitor.pages[pagina].extract_text()
     return texto
 
+# Função para limpar texto e remover stopwords
+def limpar_texto(texto):
+    stop_words = set(stopwords.words("english"))
+    palavras = word_tokenize(texto.lower())
+    palavras_limpa = [palavra for palavra in palavras if palavra.isalnum() and palavra not in stop_words]
+    return " ".join(palavras_limpa)
+
 # Diretórios com os PDFs
 diretorios = {
     'poesia': 'pdfs/poesia/',
     'prosa': 'pdfs/prosa/',
     'jornalismo': 'pdfs/jornalismo/'
 }
-
-# Função para limpar e remover stopwords
-def limpar_texto(texto):
-    texto = texto.replace("\n", " ")
-    stop_words = set(stopwords.words("english"))
-    palavras = nltk.word_tokenize(texto.lower())
-    palavras_limpa = [palavra for palavra in palavras if palavra.isalnum() and palavra not in stop_words]
-    return " ".join(palavras_limpa)
-
-
-import os
 
 # Extraindo textos e gerando classes
 textos = []
@@ -46,13 +50,11 @@ for classe, caminho in diretorios.items():
             textos.append(texto_limpo)
             classes.append(classe)
 
-from sklearn.feature_extraction.text import TfidfVectorizer
-
-# Criando a matriz Bag of Words
+# Criando a matriz TF-IDF
 vectorizer = TfidfVectorizer()
 X = vectorizer.fit_transform(textos)
 
-print("Matriz BoW: ", X.toarray())
+print("Matriz TF-IDF criada com sucesso!")
 print("Vocabulário: ", vectorizer.get_feature_names_out())
 print("Classes: ", classes)
 
@@ -60,3 +62,10 @@ from sklearn.model_selection import train_test_split
 
 # Divisão dos dados em treino e teste
 X_train, X_test, y_train, y_test = train_test_split(X, classes, test_size=0.3, random_state=42)
+
+# Chamando os modelos para treinamento
+print("Treinando modelo: Árvore de Decisão")
+train_arvore_decisao(X_train, y_train)
+
+print("\nTreinando modelo: KNN")
+train_knn(X_train, y_train)
