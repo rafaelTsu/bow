@@ -57,6 +57,8 @@ print("Matriz TF-IDF criada com sucesso!")
 print("Vocabulário: ", vectorizer.get_feature_names_out())
 print("Classes: ", classes)
 
+from sklearn.model_selection import train_test_split
+
 # Divisão dos dados em treino e teste
 X_train, X_test, y_train, y_test = train_test_split(X, classes, test_size=0.3, random_state=42)
 
